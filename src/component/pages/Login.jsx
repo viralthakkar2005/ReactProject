@@ -2,10 +2,13 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useNavigate } from "react-router-dom";
 
 import Input from '../Input';
 import Button from '../Button';
 import LoginSchema from '../../schemas/LoginSchema';
+import { account } from '../../appwrite/auth';
+import { useEffect } from 'react'
 
 export default function Login() {
 
@@ -30,8 +33,32 @@ export default function Login() {
 //   ...
 // }
 
-  const onSubmit=(data)=>{
-    console.log("Login page:",data);
+const navigate = useNavigate();
+
+useEffect(() => {
+  async function checkSession() {
+    try {
+      await account.get();   // Wait for Appwrite to check the session
+      navigate("/");         // Only navigate if a session exists
+    } catch (error) {
+      // No active session
+      console.log("User is not logged in");
+    }
+  }
+
+  checkSession();
+}, [navigate]);
+  const onSubmit=async (data)=>{
+    try {
+        await account.createEmailPasswordSession(
+          data.email,
+          data.password
+        );
+        console.log("logined");
+         navigate("/");
+      } catch (error) {
+        console.log(error.message);
+      }
   }
 
   return (
@@ -52,7 +79,7 @@ export default function Login() {
           placeholder="enter your email"
           {...register("email")}
 
-          //all other props like onChnage,onBlur automtic attaching in this inout tag
+          //all other props like onChnage,onBlur automtic attaching in this inPut tag
           //here we all other props store in register
           //include ref also automtic add we don't do this ref
           />

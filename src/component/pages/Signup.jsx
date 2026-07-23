@@ -2,11 +2,12 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useNavigate } from "react-router-dom"; 
 
 import Input from '../Input'
 import Button from '../Button'
 import { signupSchema } from '../../schemas/signupSchema'
-
+import { account,ID } from '../../appwrite/auth'
 
 
 export default function Signup() {
@@ -20,9 +21,24 @@ export default function Signup() {
       //Whenever the form is submitted (or validated), use signupSchema to validate the data.
     });
 
-  function onClick(data){
-    console.log(data);
+    const navigate = useNavigate();
+
+
+  async function onClick(data) {
+  try {
+    const user = await account.create(
+      ID.unique(),
+      data.email,
+      data.password,
+      data.fullName
+    );
+    console.log("register");
+     navigate("/");
+    
+  } catch (error) {
+    console.log(error);
   }
+}
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-100">
@@ -103,7 +119,7 @@ export default function Signup() {
           Already have an account?
 
           <Link
-            to="/"
+            to="/login"
             className="ml-1 font-semibold text-indigo-600"
           >
             Login
