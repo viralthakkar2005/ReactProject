@@ -20,22 +20,10 @@ export default function Home() {
   }, []);
 
 
-  async function handleLogout() {
-  try {
-    await account.deleteSession("current");
-
-    navigate("/login");
-  } catch (error) {
-    console.error(error);
-  }
-}
 
   return (
     <div>
       Home
-      <button onClick={handleLogout}>
-        Logout
-      </button>
     </div>
   )
 }
